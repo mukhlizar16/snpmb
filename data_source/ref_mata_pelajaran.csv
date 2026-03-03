@@ -1,0 +1,225 @@
+kode_mata_pelajaran,nama_mata_pelajaran
+100011010,Al-Qur'an 
+100011020,Hadits
+100011050,Ushul Fiqih
+100011060,Sejarah Kebudayaan Islam
+100011070,Pendidikan Agama Islam dan Budi Pekerti
+100012050,Pendidikan Agama Kristen dan Budi Pekerti
+10120,Al-Qur`an/Hadists
+10130,Aqidah Akhlak
+10140,Fiqih
+10150,Tafsir Dan Ilmu Tafsir 
+131001000,Sastra Indonesia
+200010000,Pendidikan Pancasila dan Kewarganegaraan 
+200010300,Pendidikan Pancasila
+300001,Kompetensi Tahun Keempat
+300110000,Bahasa Indonesia
+300130000,Bahasa Indonesia Tingkat Lanjut
+300210000,Bahasa Inggris
+300230000,Bahasa Inggris Tingkat Lanjut
+300310100,Bahasa Arab
+300310400,Bahasa Jepang
+300310500,Bahasa Jerman
+300310600,Bahasa Korea
+300310700,Bahasa Mandarin
+300310800,Bahasa Perancis
+311201,Penanganan Bahan Hasil Pertanian
+311202,Dasar Proses Pengolahan Pertanian
+312206,Panen dan Pasca Panen
+313201,DasarPemeliharaanTernak
+313202,PakanTernak
+313204,PembibitanTernak
+330001,IPA Terapan
+336201,Pengetahuan Tekstil
+400001,Mata Pelajaran Dasar Program Keahlian 1
+400002,Mata Pelajaran Dasar Program Keahlian 2
+400003,Mata Pelajaran Dasar Program Keahlian 3
+400004,Mata Pelajaran Dasar Program Keahlian 4
+400005,Mata Pelajaran Dasar Program Keahlian 5
+400006,Mata Pelajaran Dasar Program Keahlian 6
+401000000,Matematika (Umum)
+401001,Pengolahan Hasil Pertanian: Mata Pelajaran Paket 1
+401001000,Matematika (Peminatan)
+401002,Pengolahan Hasil Pertanian: Mata Pelajaran Paket 2
+401002000,Matematika Tingkat Lanjut
+401003,Pengolahan Hasil Pertanian: Mata Pelajaran Paket 3
+401004,Pengolahan Hasil Pertanian: Mata Pelajaran Paket 4
+401005,Pengolahan Hasil Pertanian: Mata Pelajaran Paket 5
+401100000,Ilmu Pengetahuan Alam (IPA)
+401110100,Ilmu Pengetahuan Alam (Biologi)
+401110200,Biologi
+401120000,Ilmu Pengetahuan Alam (Fisika)
+401121000,Fisika
+401130000,Kimia
+401130100,Kimia
+401200000,Ilmu Pengetahuan Sosial (IPS)
+401210000,Ilmu Pengetahuan Sosial (Geografi)
+401220000,Geografi
+401230000,Sejarah
+401231000,Sejarah Indonesia
+401234000,Sejarah Tingkat Lanjut
+401240000,Sosiologi
+401241000,Sosiologi
+401250100,Ekonomi
+401260000,Antropologi
+401900000,Ilmu Pengetahuan Alam dan Sosial (IPAS)
+405001,Agribisnis Tanaman Perkebunan: Mata Pelajaran Paket 1
+405002,Agribisnis Tanaman Perkebunan: Mata Pelajaran Paket 2
+405003,Agribisnis Tanaman Perkebunan: Mata Pelajaran Paket 3
+405004,Agribisnis Tanaman Perkebunan: Mata Pelajaran Paket 4
+405005,Agribisnis Tanaman Perkebunan: Mata Pelajaran Paket 5
+405006,Agribisnis Tanaman Perkebunan: Mata Pelajaran Paket 6
+409001,Agribisnis Aneka Ternak: Mata Pelajaran Paket 1
+409002,Agribisnis Aneka Ternak: Mata Pelajaran Paket 2
+409003,Agribisnis Aneka Ternak: Mata Pelajaran Paket 3
+409004,Agribisnis Aneka Ternak: Mata Pelajaran Paket 4
+409005,Agribisnis Aneka Ternak: Mata Pelajaran Paket 5
+409006,Agribisnis Aneka Ternak: Mata Pelajaran Paket 6
+417001,Administrasi Perkantoran: Mata Pelajaran Paket 1
+417002,Administrasi Perkantoran: Mata Pelajaran Paket 2
+417003,Administrasi Perkantoran: Mata Pelajaran Paket 3
+417004,Administrasi Perkantoran: Mata Pelajaran Paket 4
+417005,Administrasi Perkantoran: Mata Pelajaran Paket 5
+418001,Akuntansi: Mata Pelajaran Paket 1
+418002,Akuntansi: Mata Pelajaran Paket 2
+418003,Akuntansi: Mata Pelajaran Paket 3
+418004,Akuntansi: Mata Pelajaran Paket 4
+418008,Akuntansi: Mata Pelajaran Paket 8
+424001,Farmasi: Mata Pelajaran Paket 1
+424002,Farmasi: Mata Pelajaran Paket 2
+424003,Farmasi: Mata Pelajaran Paket 3
+424004,Farmasi: Mata Pelajaran Paket 4
+424005,Farmasi: Mata Pelajaran Paket 5
+426001,Keperawatan Kesehatan: Mata Pelajaran Paket 1
+426002,Keperawatan Kesehatan: Mata Pelajaran Paket 2
+426003,Keperawatan Kesehatan: Mata Pelajaran Paket 3
+426004,Keperawatan Kesehatan: Mata Pelajaran Paket 4
+426005,Keperawatan Kesehatan: Mata Pelajaran Paket 5
+426006,Keperawatan Kesehatan: Mata Pelajaran Paket 6
+426007,Keperawatan Kesehatan: Mata Pelajaran Paket 7
+426008,Keperawatan Kesehatan: Mata Pelajaran Paket 8
+432001,Tata Busana: Mata Pelajaran Paket 1
+432002,Tata Busana: Mata Pelajaran Paket 2
+432003,Tata Busana: Mata Pelajaran Paket 3
+432004,Tata Busana: Mata Pelajaran Paket 4
+432005,Tata Busana: Mata Pelajaran Paket 5
+437001,Budidaya Perikanan: Mata Pelajaran Paket 1
+437002,Budidaya Perikanan: Mata Pelajaran Paket 2
+437003,Budidaya Perikanan: Mata Pelajaran Paket 3
+437004,Budidaya Perikanan: Mata Pelajaran Paket 4
+437005,Budidaya Perikanan: Mata Pelajaran Paket 5
+4410,Sejarah
+460001,Desain Komunikasi Visual: Mata Pelajaran Paket 1
+460002,Desain Komunikasi Visual: Mata Pelajaran Paket 2
+460003,Desain Komunikasi Visual: Mata Pelajaran Paket 3
+463001,Geologi Pertambangan: Mata Pelajaran Paket 1
+463002,Geologi Pertambangan: Mata Pelajaran Paket 2
+474001,Teknik Elektronika Industri: Mata Pelajaran Paket 1
+474002,Teknik Elektronika Industri: Mata Pelajaran Paket 2
+474003,Teknik Elektronika Industri: Mata Pelajaran Paket 3
+474004,Teknik Elektronika Industri: Mata Pelajaran Paket 4
+474005,Teknik Elektronika Industri: Mata Pelajaran Paket 5
+494001,Teknik Pemesinan: Mata Pelajaran Paket 1
+494002,Teknik Pemesinan: Mata Pelajaran Paket 2
+494003,Teknik Pemesinan: Mata Pelajaran Paket 3
+494004,Teknik Pemesinan: Mata Pelajaran Paket 4
+500010000,"Pendidikan Jasmani, Olahraga, dan Kesehatan"
+500060000,Pendidikan Olahraga dan Rekreasi
+502001,Teknik Perbaikan Bodi Otomotif: Mata Pelajaran Paket 1
+502002,Teknik Perbaikan Bodi Otomotif: Mata Pelajaran Paket 2
+502003,Teknik Perbaikan Bodi Otomotif: Mata Pelajaran Paket 3
+502004,Teknik Perbaikan Bodi Otomotif: Mata Pelajaran Paket 4
+502005,Teknik Perbaikan Bodi Otomotif: Mata Pelajaran Paket 5
+502006,Teknik Perbaikan Bodi Otomotif: Mata Pelajaran Paket 6
+502007,Teknik Perbaikan Bodi Otomotif: Mata Pelajaran Paket 7
+502008,Teknik Perbaikan Bodi Otomotif: Mata Pelajaran Paket 8
+530001,Teknik Komputer dan Jaringan: Mata Pelajaran Paket 1
+530002,Teknik Komputer dan Jaringan: Mata Pelajaran Paket 2
+530003,Teknik Komputer dan Jaringan: Mata Pelajaran Paket 3
+530004,Teknik Komputer dan Jaringan: Mata Pelajaran Paket 4
+530005,Teknik Komputer dan Jaringan: Mata Pelajaran Paket 5
+542029,Teknologi Konstruksi dan Properti: Mata Pelajaran Paket 1
+542030,Teknologi Konstruksi dan Properti: Mata Pelajaran Paket 2
+542031,Teknologi Konstruksi dan Properti: Mata Pelajaran Paket 3
+542032,Teknologi Konstruksi dan Properti: Mata Pelajaran Paket 4
+542033,Teknologi Konstruksi dan Properti: Mata Pelajaran Paket 5
+542050,Teknik Ketenagalistrikan: Mata Pelajaran Paket 1
+542051,Teknik Ketenagalistrikan: Mata Pelajaran Paket 2
+542052,Teknik Ketenagalistrikan: Mata Pelajaran Paket 3
+542053,Teknik Ketenagalistrikan: Mata Pelajaran Paket 4
+542054,Teknik Ketenagalistrikan: Mata Pelajaran Paket 5
+600011000,Seni dan Budaya 
+600060000,Prakarya dan Kewirausahaan
+600070000,Prakarya
+600070100,Produk Kreatif dan Kewirausahaan
+600070200,"Kreativitas, Inovasi, dan Kewirausahaan"
+700106100,Informatika
+700109000,Seni Musik
+700110000,Seni Tari
+700121000,Seni Rupa
+710101000,Informatika
+800030100,Dasar-dasar Kefarmasian
+800050200,Dasar-dasar Keperawatan
+800070100,Anatomi dan Fisiologi
+800080100,Dasar-dasar Kerja di Laboratorium
+800080200,Laboratorium Dasar
+800090200,Perundang-undangan Kesehatan
+801050100,Kewirausahaan
+802000300,Teknologi Informasi dan Komunikasi
+802000400,Sistem Komputer
+802010100,Pemrograman Dasar
+802010200,Pemrograman WEB
+802020200,Jaringan Dasar
+802030310,Simulasi dan Komunikasi Digital
+804010100,Gambar Teknik
+804010500,Gambar Teknik listrik
+817010200,Dasar-dasar Geologi
+820010100,Teknologi dasar Otomotif
+820020200,Pekerjaan dasar Teknik Otomotif
+820030300,Teknik Listrik dasar Otomotif
+825010100,Dasar-dasar Budidaya Tanaman
+825010200,Alat Mesin Pertanian
+825220100,Keamanan Pangan
+825280200,Dasar Pengendalian Mutu Hasil pertanian
+827140200,Dasar Dasar Budidaya Perikanan
+827150100,Pengelolaan Kualitas Air
+827170100,Produksi Pakan Alami
+827180100,Produksi Pakan Buatan
+828010100,Pengantar Ekonomi dan Bisnis
+828050100,Korespondensi
+828060100,Kearsipan
+828120100,Pengantar Pariwisata
+831020200,Dasar Teknologi Menjahit
+831030300,Dasar Pola
+831040400,Dasar Desain
+843020100,Seni Budaya
+999800408,"Pendidikan Jasmani, Olahraga dan Kesehatan"
+999800701,Bahasa Indonesia
+999800702,Bahasa Inggris
+999800703,Biologi
+999800704,Ekonomi
+999800706,Geografi
+999800708,Kimia
+999800709,Matematika
+999800711,Pendidikan Agama
+999800713,Pendidikan Kewarganegaraan
+999800715,Sejarah
+999800716,Seni Budaya
+999800717,Sosiologi
+AKA,Aqidah Akhlak
+AQH,Al-Qur'an Hadits
+ARZ,Bahasa Arab (Peminatan)
+DPK,Dasar-dasar Program Keahlian
+FKH,Fikih
+IPAK,"Ilmu Pengetahuan Alam: Fisika, Kimia, Biologi"
+IPSK,"Ilmu Pengetahuan Sosial: Sosiologi, Ekonomi, Sejarah, Geografi"
+KBA,Keterampilan/Bahasa Asing
+MPKK,Mata Pelajaran Konsentrasi Keahlian
+MPL01,Mata Pelajaran Pilihan 1
+MPL02,Mata Pelajaran Pilihan 2
+MPL03,Mata Pelajaran Pilihan 3
+MPL05,Mata Pelajaran Pilihan 5
+PKL,Praktek Kerja Lapangan
+SEJ,Sejarah (Peminatan)
+SPR,Seni dan Prakarya
+TAF,Tafsir dan Ilmu Tafsir
