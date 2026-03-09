@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/siswa/json', [DataSiswaController::class, 'json'])->name('siswa.json');
         Route::get('/siswa/export', [DataSiswaController::class, 'export'])->name('siswa.export');
         Route::get('/siswa/export-excel', [DataSiswaController::class, 'exportExcel'])->name('siswa.export-excel');
+        Route::get('/siswa/prodi-options', [DataSiswaController::class, 'prodiOptions'])->name('siswa.prodi-options');
     });
 
     Route::prefix('import')->name('import.')->controller(ImportController::class)
