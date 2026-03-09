@@ -214,6 +214,22 @@
                 border-color: #2563eb;
             }
 
+            .dt-filter-select {
+                padding: 5px 8px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                font-size: .75rem;
+                color: #475569;
+                background: #f8fafc;
+                cursor: pointer;
+                max-width: 200px;
+            }
+
+            .dt-filter-select:focus {
+                outline: none;
+                border-color: #2563eb;
+            }
+
             .export-wrap {
                 position: relative;
                 display: inline-block;
@@ -313,7 +329,8 @@
                             </svg>
                         </button>
                         <div class="export-dropdown" id="export-dropdown">
-                            <a href="{{ route('data.siswa.export-excel') }}" class="export-item">
+                            <a href="#" id="export-excel" class="export-item"
+                                data-base="{{ route('data.siswa.export-excel') }}">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
                                     stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -324,7 +341,8 @@
                                 </svg>
                                 Excel (.xlsx)
                             </a>
-                            <a href="{{ route('data.siswa.export') }}" class="export-item">
+                            <a href="#" id="export-csv" class="export-item"
+                                data-base="{{ route('data.siswa.export') }}">
                                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#64748b"
                                     stroke-width="1.5">
                                     <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -346,6 +364,18 @@
                             <option value="500">500</option>
                         </select>
                         {{-- <span style="font-size:.7rem;color:#94a3b8;">data</span> --}}
+                    </div>
+
+                    <div style="display:flex;align-items:center;gap:4px;">
+                        <span style="font-size:.7rem;color:#94a3b8;white-space:nowrap;">Filter Pilihan</span>
+                        <select class="dt-filter-select" id="filter-no-urut">
+                            <option value="">Semua</option>
+                            <option value="1">Pilihan 1</option>
+                            <option value="2">Pilihan 2</option>
+                        </select>
+                        <select class="dt-filter-select" id="filter-kode-prodi" disabled style="max-width:220px;">
+                            <option value="">— Pilih Prodi —</option>
+                        </select>
                     </div>
 
                     <div class="dt-search-wrap">
@@ -427,6 +457,10 @@
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
+                        data: function(d) {
+                            d.no_urut_pilihan = $('#filter-no-urut').val();
+                            d.kode_prodi      = $('#filter-kode-prodi').val();
+                        }
                     },
                     columns: [{
                             data: 'DT_RowIndex',
@@ -634,6 +668,33 @@
                     },
                 });
 
+                // Saat pilih no urut pilihan → load prodi options
+                $('#filter-no-urut').on('change', function() {
+                    const noUrut = $(this).val();
+                    const $prodi = $('#filter-kode-prodi');
+                    $prodi.empty().append('<option value="">— Pilih Prodi —</option>').prop('disabled', true);
+
+                    if (!noUrut) {
+                        table.draw();
+                        return;
+                    }
+
+                    $.getJSON('{{ route('data.siswa.prodi-options') }}', { no_urut_pilihan: noUrut }, function(items) {
+                        items.forEach(function(item) {
+                            const label = item.nama_prodi ? item.kode_prodi + ' — ' + item.nama_prodi : item.kode_prodi;
+                            $prodi.append($('<option>').val(item.kode_prodi).text(label));
+                        });
+                        $prodi.prop('disabled', false);
+                    });
+
+                    table.draw();
+                });
+
+                // Saat pilih prodi → reload table
+                $('#filter-kode-prodi').on('change', function() {
+                    table.draw();
+                });
+
                 // Custom search
                 let searchTimer;
                 $('#dt-search').on('keyup', function() {
@@ -661,6 +722,22 @@
                 // Tutup dropdown jika klik di luar
                 $(document).on('click', function() {
                     $('#export-dropdown').removeClass('open');
+                });
+
+                // Bangun URL export dengan filter aktif
+                function buildExportUrl(base) {
+                    const noUrut    = $('#filter-no-urut').val();
+                    const kodeProdi = $('#filter-kode-prodi').val();
+                    const params    = new URLSearchParams();
+                    if (noUrut)    params.set('no_urut_pilihan', noUrut);
+                    if (kodeProdi) params.set('kode_prodi', kodeProdi);
+                    const qs = params.toString();
+                    return qs ? base + '?' + qs : base;
+                }
+
+                $('#btn-export').on('mouseenter', function() {
+                    $('#export-excel').attr('href', buildExportUrl($('#export-excel').data('base')));
+                    $('#export-csv').attr('href', buildExportUrl($('#export-csv').data('base')));
                 });
 
                 // Loading state saat export item diklik

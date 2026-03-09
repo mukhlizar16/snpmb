@@ -34,18 +34,23 @@ class DataSiswaProdiSheet extends DefaultValueBinder implements
     public function __construct(
         private readonly string $kodeProdi,
         private readonly string $namaProdi,
+        private readonly int $noUrut = 1,
     ) {}
 
     public function title(): string
     {
         // Hapus karakter tidak valid untuk nama sheet Excel, batasi 31 karakter
-        $name = preg_replace('/[\\\\\/\*\?\[\]:]/', '', $this->namaProdi);
+        $name   = preg_replace('/[\\\\\/\*\?\[\]:]/', '', $this->namaProdi);
+        $suffix = ' P' . $this->noUrut;
+        $base   = mb_substr($name ?: $this->kodeProdi, 0, 31 - mb_strlen($suffix));
 
-        return mb_substr($name ?: $this->kodeProdi, 0, 31);
+        return $base . $suffix;
     }
 
     public function query()
     {
+        $u = $this->noUrut; // urutan aktif untuk subquery tampilan
+
         return DB::table('data_siswa as ds')
             ->leftJoin('data_sekolah as sk', 'sk.npsn', '=', 'ds.npsn_sekolah')
             ->leftJoin('ref_jurusan as rj', 'rj.id_jurusan', '=', 'ds.id_jurusan')
@@ -54,19 +59,19 @@ class DataSiswaProdiSheet extends DefaultValueBinder implements
                 DB::raw('(SELECT nomor_pendaftaran, MAX(nilai_prestasi) as nilai_prestasi FROM data_prestasi GROUP BY nomor_pendaftaran) as dp'),
                 'dp.nomor_pendaftaran', '=', 'ds.nomor_pendaftaran'
             )
-            ->selectRaw('
+            ->selectRaw("
                 ds.nomor_pendaftaran, ds.nama_siswa, ds.file_foto,
                 (SELECT kode_prodi FROM data_pilihan
-                    WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 1
+                    WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                     LIMIT 1) as id_jurusan,
                 (SELECT prd.nama_prodi FROM data_pilihan dpl
                     INNER JOIN data_prodi prd ON prd.kode_prodi = dpl.kode_prodi
-                    WHERE dpl.nomor_pendaftaran = ds.nomor_pendaftaran AND dpl.no_urut_pilihan = 1
+                    WHERE dpl.nomor_pendaftaran = ds.nomor_pendaftaran AND dpl.no_urut_pilihan = {$u}
                     LIMIT 1) as nama_jurusan,
                 ds.npsn_sekolah,
                 ds.kode_jenis_kelamin, ds.tanggal_lahir, ds.nisn, ds.nik,
                 (SELECT kode_prodi FROM data_pilihan
-                    WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 1
+                    WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                     LIMIT 1) as kode_prodi_pilihan_1,
                 (SELECT kode_prodi FROM data_pilihan
                     WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 2
@@ -78,13 +83,13 @@ class DataSiswaProdiSheet extends DefaultValueBinder implements
                 ds.penghasilan_ayah, ds.penghasilan_ibu, ds.kebutuhan_khusus,
                 sk.nama_sekolah,
                 rj.nama_jurusan as jurusan_sma,
-                (SELECT GROUP_CONCAT(rmp.nama_mata_pelajaran ORDER BY rmp.nama_mata_pelajaran SEPARATOR \', \')
+                (SELECT GROUP_CONCAT(rmp.nama_mata_pelajaran ORDER BY rmp.nama_mata_pelajaran SEPARATOR ', ')
                     FROM ref_mp_pendukung rmpp
                     INNER JOIN ref_mata_pelajaran rmp ON rmp.kode_mata_pelajaran = rmpp.kode_mata_pelajaran
                     WHERE rmpp.id_jurusan = ds.id_jurusan
                       AND rmpp.kode_prodi = (
                           SELECT kode_prodi FROM data_pilihan
-                          WHERE nomor_pendaftaran = ds.nomor_pendaftaran
+                          WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                           LIMIT 1
                       )
                 ) as mpp,
@@ -97,7 +102,7 @@ class DataSiswaProdiSheet extends DefaultValueBinder implements
                     WHERE rmpp.id_jurusan = ds.id_jurusan
                       AND rmpp.kode_prodi = (
                           SELECT kode_prodi FROM data_pilihan
-                          WHERE nomor_pendaftaran = ds.nomor_pendaftaran
+                          WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                           LIMIT 1
                       )
                     LIMIT 1
@@ -117,7 +122,7 @@ class DataSiswaProdiSheet extends DefaultValueBinder implements
                             WHERE rmpp2.id_jurusan = ds.id_jurusan
                               AND rmpp2.kode_prodi = (
                                   SELECT kode_prodi FROM data_pilihan
-                                  WHERE nomor_pendaftaran = ds.nomor_pendaftaran
+                                  WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                                   LIMIT 1
                               )
                             LIMIT 1),
@@ -141,7 +146,7 @@ class DataSiswaProdiSheet extends DefaultValueBinder implements
                                 WHERE rmpp2.id_jurusan = ds.id_jurusan
                                   AND rmpp2.kode_prodi = (
                                       SELECT kode_prodi FROM data_pilihan
-                                      WHERE nomor_pendaftaran = ds.nomor_pendaftaran
+                                      WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                                       LIMIT 1
                                   )
                                 LIMIT 1),
@@ -152,8 +157,8 @@ class DataSiswaProdiSheet extends DefaultValueBinder implements
                     0.05 * COALESCE(dp.nilai_prestasi, 0),
                     2
                 ) as nilai_akhir
-            ')
-            ->whereRaw('EXISTS (SELECT 1 FROM data_pilihan WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 1 AND kode_prodi = ?)', [$this->kodeProdi])
+            ")
+            ->whereRaw('EXISTS (SELECT 1 FROM data_pilihan WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = ? AND kode_prodi = ?)', [$this->noUrut, $this->kodeProdi])
             ->orderByRaw('nilai_akhir DESC');
     }
 

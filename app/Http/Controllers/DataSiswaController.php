@@ -20,7 +20,17 @@ class DataSiswaController extends Controller
 
     public function json(Request $request): JsonResponse
     {
-        $query = $this->baseQuery();
+        $noUrut    = (int) $request->input('no_urut_pilihan', 0);
+        $kodeProdi = trim($request->input('kode_prodi', ''));
+
+        $query = $this->baseQuery($noUrut);
+
+        if ($noUrut > 0 && $kodeProdi !== '') {
+            $query->whereRaw(
+                'EXISTS (SELECT 1 FROM data_pilihan WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = ? AND kode_prodi = ?)',
+                [$noUrut, $kodeProdi]
+            );
+        }
 
         return DataTables::of($query)
             ->filter(function ($q) use ($request) {
@@ -38,8 +48,26 @@ class DataSiswaController extends Controller
             ->make(true);
     }
 
+    public function prodiOptions(Request $request): JsonResponse
+    {
+        $noUrut = (int) $request->input('no_urut_pilihan', 1);
+
+        $rows = DB::table('data_pilihan as dp')
+            ->leftJoin('data_prodi as prd', 'prd.kode_prodi', '=', 'dp.kode_prodi')
+            ->select('dp.kode_prodi', 'prd.nama_prodi')
+            ->where('dp.no_urut_pilihan', $noUrut)
+            ->distinct()
+            ->orderBy('dp.kode_prodi')
+            ->get();
+
+        return response()->json($rows);
+    }
+
     public function export(Request $request): StreamedResponse
     {
+        $noUrut    = (int) $request->input('no_urut_pilihan', 0);
+        $kodeProdi = trim($request->input('kode_prodi', ''));
+
         $filename = 'data-siswa-' . now()->format('YmdHis') . '.csv';
 
         $headers = [
@@ -78,7 +106,7 @@ class DataSiswaController extends Controller
             'Nilai Prestasi',
         ];
 
-        return response()->streamDownload(function () use ($headers) {
+        return response()->streamDownload(function () use ($headers, $noUrut, $kodeProdi) {
             $handle = fopen('php://output', 'w');
 
             // BOM agar Excel baca UTF-8 dengan benar
@@ -86,6 +114,7 @@ class DataSiswaController extends Controller
             fputcsv($handle, $headers);
 
             $no = 1;
+            $u  = $noUrut ?: 1; // urutan aktif untuk subquery tampilan
 
             // Gunakan chunk(500) agar tidak habis memori
             DB::table('data_siswa as ds')
@@ -98,19 +127,19 @@ class DataSiswaController extends Controller
                     '=',
                     'ds.nomor_pendaftaran'
                 )
-                ->selectRaw('
+                ->selectRaw("
                     ds.nomor_pendaftaran, ds.nama_siswa, ds.file_foto,
                     (SELECT kode_prodi FROM data_pilihan
-                        WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 1
+                        WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                         LIMIT 1) as id_jurusan,
                     (SELECT prd.nama_prodi FROM data_pilihan dpl
                         INNER JOIN data_prodi prd ON prd.kode_prodi = dpl.kode_prodi
-                        WHERE dpl.nomor_pendaftaran = ds.nomor_pendaftaran AND dpl.no_urut_pilihan = 1
+                        WHERE dpl.nomor_pendaftaran = ds.nomor_pendaftaran AND dpl.no_urut_pilihan = {$u}
                         LIMIT 1) as nama_jurusan,
                     ds.npsn_sekolah,
                     ds.kode_jenis_kelamin, ds.tanggal_lahir, ds.nisn, ds.nik,
                     (SELECT kode_prodi FROM data_pilihan
-                        WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 1
+                        WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                         LIMIT 1) as kode_prodi_pilihan_1,
                     (SELECT kode_prodi FROM data_pilihan
                         WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 2
@@ -122,20 +151,27 @@ class DataSiswaController extends Controller
                     ds.penghasilan_ayah, ds.penghasilan_ibu, ds.kebutuhan_khusus,
                     sk.nama_sekolah,
                     rj.nama_jurusan as jurusan_sma,
-                    (SELECT GROUP_CONCAT(rmp.nama_mata_pelajaran ORDER BY rmp.nama_mata_pelajaran SEPARATOR \', \')
+                    (SELECT GROUP_CONCAT(rmp.nama_mata_pelajaran ORDER BY rmp.nama_mata_pelajaran SEPARATOR ', ')
                         FROM ref_mp_pendukung rmpp
                         INNER JOIN ref_mata_pelajaran rmp ON rmp.kode_mata_pelajaran = rmpp.kode_mata_pelajaran
                         WHERE rmpp.id_jurusan = ds.id_jurusan
                           AND rmpp.kode_prodi = (
                               SELECT kode_prodi FROM data_pilihan
-                              WHERE nomor_pendaftaran = ds.nomor_pendaftaran
+                              WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                               LIMIT 1
                           )
                     ) as mpp,
                     ris.index_sekolah as index_sma,
                     COALESCE(dp.nilai_prestasi, 0) as nilai_prestasi
-                ')
-                ->whereRaw('EXISTS (SELECT 1 FROM data_pilihan WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 1)')
+                ")
+                ->when($noUrut > 0, fn ($q) => $q->whereRaw(
+                    'EXISTS (SELECT 1 FROM data_pilihan WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = ?)',
+                    [$noUrut]
+                ))
+                ->when($noUrut > 0 && $kodeProdi !== '', fn ($q) => $q->whereRaw(
+                    'EXISTS (SELECT 1 FROM data_pilihan WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = ? AND kode_prodi = ?)',
+                    [$noUrut, $kodeProdi]
+                ))
                 ->orderBy('ds.nomor_pendaftaran')
                 ->chunk(500, function ($rows) use ($handle, &$no) {
                     foreach ($rows as $row) {
@@ -184,11 +220,14 @@ class DataSiswaController extends Controller
         ]);
     }
 
-    public function exportExcel(): BinaryFileResponse
+    public function exportExcel(Request $request): BinaryFileResponse
     {
+        $noUrut    = (int) $request->input('no_urut_pilihan', 0);
+        $kodeProdi = trim($request->input('kode_prodi', ''));
+
         $filename = 'data-siswa-' . now()->format('YmdHis') . '.xlsx';
 
-        return Excel::download(new DataSiswaExport, $filename);
+        return Excel::download(new DataSiswaExport($noUrut, $kodeProdi), $filename);
     }
 
     // ── CSV format helpers ──────────────────────────────────────────────────────
@@ -219,8 +258,10 @@ class DataSiswaController extends Controller
 
     // ── Query bersama untuk json() ──────────────────────────────────────────────
 
-    private function baseQuery()
+    private function baseQuery(int $noUrut = 0)
     {
+        $u = $noUrut ?: 1; // urutan aktif untuk subquery tampilan
+
         return DB::table('data_siswa as ds')
             ->leftJoin('data_sekolah as sk', 'sk.npsn', '=', 'ds.npsn_sekolah')
             ->leftJoin('ref_jurusan as rj', 'rj.id_jurusan', '=', 'ds.id_jurusan')
@@ -231,16 +272,16 @@ class DataSiswaController extends Controller
                 '=',
                 'ds.nomor_pendaftaran'
             )
-            ->selectRaw('
+            ->selectRaw("
                 ds.nomor_pendaftaran,
                 ds.nama_siswa,
                 ds.file_foto,
                 (SELECT kode_prodi FROM data_pilihan
-                    WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 1
+                    WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                     LIMIT 1) as id_jurusan,
                 (SELECT prd.nama_prodi FROM data_pilihan dpl
                     INNER JOIN data_prodi prd ON prd.kode_prodi = dpl.kode_prodi
-                    WHERE dpl.nomor_pendaftaran = ds.nomor_pendaftaran AND dpl.no_urut_pilihan = 1
+                    WHERE dpl.nomor_pendaftaran = ds.nomor_pendaftaran AND dpl.no_urut_pilihan = {$u}
                     LIMIT 1) as nama_jurusan,
                 ds.npsn_sekolah,
                 ds.kode_jenis_kelamin,
@@ -269,13 +310,13 @@ class DataSiswaController extends Controller
                 ds.kebutuhan_khusus,
                 sk.nama_sekolah,
                 rj.nama_jurusan   as jurusan_sma,
-                (SELECT GROUP_CONCAT(rmp.nama_mata_pelajaran ORDER BY rmp.nama_mata_pelajaran SEPARATOR \', \')
+                (SELECT GROUP_CONCAT(rmp.nama_mata_pelajaran ORDER BY rmp.nama_mata_pelajaran SEPARATOR ', ')
                     FROM ref_mp_pendukung rmpp
                     INNER JOIN ref_mata_pelajaran rmp ON rmp.kode_mata_pelajaran = rmpp.kode_mata_pelajaran
                     WHERE rmpp.id_jurusan = ds.id_jurusan
                       AND rmpp.kode_prodi = (
                           SELECT kode_prodi FROM data_pilihan
-                          WHERE nomor_pendaftaran = ds.nomor_pendaftaran
+                          WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                           LIMIT 1
                       )
                 ) as mpp,
@@ -291,7 +332,7 @@ class DataSiswaController extends Controller
                     WHERE rmpp.id_jurusan = ds.id_jurusan
                       AND rmpp.kode_prodi = (
                           SELECT kode_prodi FROM data_pilihan
-                          WHERE nomor_pendaftaran = ds.nomor_pendaftaran
+                          WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                           LIMIT 1
                       )
                     LIMIT 1
@@ -311,7 +352,7 @@ class DataSiswaController extends Controller
                             WHERE rmpp2.id_jurusan = ds.id_jurusan
                               AND rmpp2.kode_prodi = (
                                   SELECT kode_prodi FROM data_pilihan
-                                  WHERE nomor_pendaftaran = ds.nomor_pendaftaran
+                                  WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                                   LIMIT 1
                               )
                             LIMIT 1),
@@ -336,7 +377,7 @@ class DataSiswaController extends Controller
                                 WHERE rmpp2.id_jurusan = ds.id_jurusan
                                   AND rmpp2.kode_prodi = (
                                       SELECT kode_prodi FROM data_pilihan
-                                      WHERE nomor_pendaftaran = ds.nomor_pendaftaran
+                                      WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = {$u}
                                       LIMIT 1
                                   )
                                 LIMIT 1),
@@ -347,7 +388,10 @@ class DataSiswaController extends Controller
                     0.05 * COALESCE(dp.nilai_prestasi, 0),
                     2
                 ) as nilai_akhir
-            ')
-            ->whereRaw('EXISTS (SELECT 1 FROM data_pilihan WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = 1)');
+            ")
+            ->when($noUrut > 0, fn ($q) => $q->whereRaw(
+                'EXISTS (SELECT 1 FROM data_pilihan WHERE nomor_pendaftaran = ds.nomor_pendaftaran AND no_urut_pilihan = ?)',
+                [$noUrut]
+            ));
     }
 }
